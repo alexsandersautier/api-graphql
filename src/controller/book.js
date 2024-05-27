@@ -6,38 +6,43 @@ export async function createTable(){
     })
 }
 
-export async function insertBook(book){
+export async function insertBook(req, res){
+    let book = req.body;
     openDb().then(db=>{
-        db.run('INSERT INTO Book (title, release) VALUES (?, ?)', [book.title, book.release]);
-    })
+        db.run('INSERT INTO Book (title, release) VALUES (?, ?)', [book.title, book.release])
+            .then(()=>res.json({"statusCode": 200}));
+    });
 }
 
-export async function updateBook(id, book){
+export async function getBook(req, res){
     openDb()
         .then(db=>{
-            db.run('UPDATE Book SET title=?, release=? WHERE id=?', [book.title, book.release, id]);
+            db.all('SELECT * FROM Book')
+                .then(books=>res.json(books));
         });
 }
 
-export async function getBook(){
-    return openDb()
+export async function getBookById(req, res){
+    openDb()
         .then(db=>{
-            return db.all('SELECT * FROM Book')
-                .then(res=>res);
+            db.get('SELECT * FROM Book WHERE id=?', req.params.id)
+                .then(book=>res.json(book));
         });
 }
 
-export async function getBookById(id){
-    return openDb()
+export async function updateBook(req, res){
+    let book = req.body;
+    openDb()
         .then(db=>{
-            return db.get('SELECT * FROM Book WHERE id=?', id)
-                .then(res=>res);
+            db.run('UPDATE Book SET title=?, release=? WHERE id=?', [book.title, book.release, req.params.id])
+            .then(()=>res.json({"statusCode": 200}));
         });
 }
 
-export async function deleteBook(id){
+export async function deleteBook(req, res){
     openDb().
         then(db=>{
-            db.run('DELETE FROM Book WHERE id=?', [id]);
+            db.run('DELETE FROM Book WHERE id=?', [req.params.id])
+            .then(()=>res.json({"statusCode": 200}));
         });
 }

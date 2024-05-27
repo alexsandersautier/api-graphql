@@ -1,54 +1,8 @@
-import { createTable, insertBook, updateBook, getBook, getBookById, deleteBook } from './controller/book.js'
 import express from 'express' ;
+import router from './routes.js';
 const app = express();
-app.use(express.json())
-
-createTable();
-
-app.get('/books', async (req, res) =>{
-    let books = await getBook();
-
-    res.json({
-        "statusCode": 200,
-        books
-    });
-});
-
-app.get('/books/:id', async (req, res) =>{
-    let books = await getBookById(req.params.id);
-
-    res.json({
-        "statusCode": 200,
-        books
-    });
-});
-
-app.post('/books', (req, res) =>{
-    insertBook(req.body);
-    res.json({
-        "statusCode": 200
-    });
-});
-
-app.put(`/books/:id`, (req, res) =>{
-    updateBook(req.params.id, req.body);
-    res.json({
-        "statusCode": 200
-    });
-});
-
-app.delete('/books/:id', (req, res) =>{
-    try {
-       deleteBook(req.params.id) 
-       res.json({
-        "statusCode": 200
-       });
-    } catch (error) {
-        res.json({
-            error
-        });
-    }
-});
+app.use(express.json());
+app.use(router)
 
 app.listen(3000, ()=>{
     console.log(`🔥 Server started...`)
